@@ -248,6 +248,4 @@ C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\
 C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\bin\Debug\CrystalDecisions.ReportAppServer.CubeDefModel.dll
 C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\bin\Debug\CrystalDecisions.ReportAppServer.ObjectFactory.dll
 C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\bin\Debug\CrystalDecisions.ReportAppServer.CommonControls.dll
-C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\obj\x86\Debug\School Soft.vbprojAssemblyReference.cache
-C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\obj\x86\Debug\School Soft.vbproj.CoreCompileInputs.cache
-C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\obj\x86\Debug\School Soft.vbproj.CopyComplete
+C:\Users\amwadwaa\Documents\Visual Studio 2015\Projects\School Soft\School Soft\obj\x86\Debug\School Soft.vbprojResolveAssemblyReference.cache

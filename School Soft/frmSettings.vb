@@ -9,7 +9,10 @@
     End Sub
 
     Private Sub frmSettings_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-
+        Me.txtDatabaseName.Text = My.Settings.dbName
+        Me.txtPassword.Text = My.Settings.PassWord
+        Me.txtServerName.Text = My.Settings.serverName
+        Me.txtUserName.Text = My.Settings.UserName
     End Sub
 
 

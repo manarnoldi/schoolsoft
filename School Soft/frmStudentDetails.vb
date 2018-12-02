@@ -185,9 +185,6 @@ Public Class frmStudentDetails
             If conn.State = ConnectionState.Open Then
                 conn.Close()
             End If
-            Me.GroupBox3.Enabled = True
-            Me.DTPDOA.Enabled = True
-            Me.DTPDOR.Enabled = True
             Me.btnSave.Enabled = True
             Me.btnUpdate.Enabled = False
             Me.btnDelete.Enabled = False
@@ -372,12 +369,18 @@ Public Class frmStudentDetails
             disabled = False
         End If
 
+        If Me.rbSexMale.Checked = True Then
+            sex = True
+        ElseIf Me.rbSexFemale.Checked = True Then
+            sex = False
+        End If
+
         cmdStudDetails.Connection = conn
         cmdStudDetails.CommandType = CommandType.Text
-        cmdStudDetails.CommandText = "SELECT * FROM tblStudDetails WHERE (status='True') AND (admNo=@admNo) AND (FName=@FName)" & _
-            vbNewLine & "AND (MName=@MName) AND (LName=@LName) AND (phone=@phone) AND (idNumber=@idNumber) AND (boarder=@boarder)" & _
-            vbNewLine & " AND (transport=@transport) AND (email=@email) AND (residence=@residence) AND (religion=@religion) " & _
-            vbNewLine & " AND (address=@address) AND (disabled=@disabled) AND (dateOfBirth=@dateOfBirth)"
+        cmdStudDetails.CommandText = "SELECT * FROM tblStudDetails WHERE (status='True') AND (admNo=@admNo) AND (FName=@FName)" &
+            vbNewLine & "AND (MName=@MName) AND (LName=@LName) AND (phone=@phone) AND (idNumber=@idNumber) AND (boarder=@boarder)" &
+            vbNewLine & " AND (transport=@transport) AND (email=@email) AND (residence=@residence) AND (religion=@religion) " &
+            vbNewLine & " AND (address=@address) AND (disabled=@disabled) AND (dateOfBirth=@dateOfBirth) AND (sex=@sex)"
         cmdStudDetails.Parameters.Clear()
         cmdStudDetails.Parameters.AddWithValue("@admNo", Me.txtStudNo.Text.Trim)
         cmdStudDetails.Parameters.AddWithValue("@FName", Me.txtFName.Text.Trim)
@@ -393,6 +396,7 @@ Public Class frmStudentDetails
         cmdStudDetails.Parameters.AddWithValue("@dateOfBirth", DTPDOB.Value.Date)
         cmdStudDetails.Parameters.AddWithValue("@religion", Me.cboReligion.Text.Trim)
         cmdStudDetails.Parameters.AddWithValue("@address", Me.txtAddress.Text.Trim)
+        cmdStudDetails.Parameters.AddWithValue("@sex", sex)
         reader = cmdStudDetails.ExecuteReader
         If reader.HasRows Then
             recordExists = True
@@ -402,67 +406,76 @@ Public Class frmStudentDetails
         reader.Close()
     End Sub
 
-   Private Sub lstStudDetails_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStudDetails.Click
+    Private Sub lstStudDetails_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStudDetails.Click
         Try
             If conn.State = ConnectionState.Closed Then
                 conn.Open()
             End If
             dbconnection()
-       
-        If Me.lstStudDetails.SelectedItems.Count = 1 Then
-            cmdStudDetails.Connection = conn
-            cmdStudDetails.CommandType = CommandType.Text
+
+            If Me.lstStudDetails.SelectedItems.Count = 1 Then
+                cmdStudDetails.Connection = conn
+                cmdStudDetails.CommandType = CommandType.Text
                 cmdStudDetails.CommandText = "SELECT * FROM tblStudDetails WHERE (status='True') AND (studId=@studId)"
-            cmdStudDetails.Parameters.Clear()
-            cmdStudDetails.Parameters.AddWithValue("@studId", Me.lstStudDetails.SelectedItems(0).Tag)
-            reader = cmdStudDetails.ExecuteReader
-            If reader.HasRows Then
-                While reader.Read
-                    Me.txtStudNo.Text = IIf(DBNull.Value.Equals(reader!admNo), "", reader!admNo)
-                    Me.txtFName.Text = IIf(DBNull.Value.Equals(reader!FName), "", reader!FName)
-                    Me.txtMName.Text = IIf(DBNull.Value.Equals(reader!MName), "", reader!MName)
-                    Me.txtLName.Text = IIf(DBNull.Value.Equals(reader!LName), "", reader!LName)
-                    Me.txtAddress.Text = IIf(DBNull.Value.Equals(reader!address), "", reader!address)
-                    Me.txtPhoneNo.Text = IIf(DBNull.Value.Equals(reader!phone), "", reader!phone)
-                    Me.txtIdNo.Text = IIf(DBNull.Value.Equals(reader!idNumber), "", reader!idNumber)
-                    Me.txtEmail.Text = IIf(DBNull.Value.Equals(reader!email), "", reader!email)
-                    Me.cboResidence.Text = IIf(DBNull.Value.Equals(reader!residence), "", reader!residence)
-                    Me.cboReligion.Text = IIf(DBNull.Value.Equals(reader!religion), "", reader!religion)
-                    Me.DTPDOA.Value = IIf(DBNull.Value.Equals(reader!dateOfAdmission), Date.Now, reader!dateOfAdmission)
-                    Me.DTPDOB.Value = IIf(DBNull.Value.Equals(reader!dateOfBirth), Date.Now, reader!dateOfBirth)
+                cmdStudDetails.Parameters.Clear()
+                cmdStudDetails.Parameters.AddWithValue("@studId", Me.lstStudDetails.SelectedItems(0).Tag)
+                reader = cmdStudDetails.ExecuteReader
+                If reader.HasRows Then
+                    While reader.Read
+                        Me.txtStudNo.Text = IIf(DBNull.Value.Equals(reader!admNo), "", reader!admNo)
+                        Me.txtFName.Text = IIf(DBNull.Value.Equals(reader!FName), "", reader!FName)
+                        Me.txtMName.Text = IIf(DBNull.Value.Equals(reader!MName), "", reader!MName)
+                        Me.txtLName.Text = IIf(DBNull.Value.Equals(reader!LName), "", reader!LName)
+                        Me.txtAddress.Text = IIf(DBNull.Value.Equals(reader!address), "", reader!address)
+                        Me.txtPhoneNo.Text = IIf(DBNull.Value.Equals(reader!phone), "", reader!phone)
+                        Me.txtIdNo.Text = IIf(DBNull.Value.Equals(reader!idNumber), "", reader!idNumber)
+                        Me.txtEmail.Text = IIf(DBNull.Value.Equals(reader!email), "", reader!email)
+                        Me.cboResidence.Text = IIf(DBNull.Value.Equals(reader!residence), "", reader!residence)
+                        Me.cboReligion.Text = IIf(DBNull.Value.Equals(reader!religion), "", reader!religion)
+                        Me.DTPDOA.Value = IIf(DBNull.Value.Equals(reader!dateOfAdmission), Date.Now, reader!dateOfAdmission)
+                        Me.DTPDOB.Value = IIf(DBNull.Value.Equals(reader!dateOfBirth), Date.Now, reader!dateOfBirth)
                         Me.DTPDOR.Value = IIf(DBNull.Value.Equals(reader!dateOfReg), Date.Now, reader!dateOfReg)
                         Me.lstStudDetails.Tag = Me.lstStudDetails.SelectedItems(0).Tag
-                        If IIf(DBNull.Value.Equals(reader!sex), "", reader!sex) = True Then
-                            Me.rbSexMale.Checked = True
-                        Else
-                            Me.rbSexFemale.Checked = True
-                        End If
 
-                        If IIf(DBNull.Value.Equals(reader!boarder), "", reader!boarder) = True Then
-                            Me.rbBoarderTrue.Checked = True
-                        Else
-                            Me.rbBoarderFalse.Checked = True
-                        End If
+                        Dim sex As String = IIf(DBNull.Value.Equals(reader!sex), "", reader!sex)
+                        Dim boarder As String = IIf(DBNull.Value.Equals(reader!boarder), "", reader!boarder)
+                        Dim disabled As String = IIf(DBNull.Value.Equals(reader!disabled), "", reader!disabled)
+                        Dim transport As String = IIf(DBNull.Value.Equals(reader!transport), "", reader!transport)
 
-                        If IIf(DBNull.Value.Equals(reader!disabled), "", reader!disabled) = True Then
-                            Me.rbDisabledTrue.Checked = True
-                        Else
-                            Me.rbDisabledFalse.Checked = True
+                        radioButtonsUncheck()
+                        If sex = "True" Or sex = "False" Then
+                            If sex = "True" Then
+                                Me.rbSexMale.Checked = True
+                            Else
+                                Me.rbSexFemale.Checked = True
+                            End If
                         End If
-
-                        If IIf(DBNull.Value.Equals(reader!transport), "", reader!transport) = True Then
-                            Me.rbTransportTrue.Checked = True
-                        Else
-                            Me.rbTransportFalse.Checked = True
+                        If boarder = "True" Or boarder = "False" Then
+                            If boarder = "True" Then
+                                Me.rbBoarderTrue.Checked = True
+                            Else
+                                Me.rbBoarderFalse.Checked = True
+                            End If
                         End If
-                End While
-            End If
-            reader.Close()
-            Me.GroupBox3.Enabled = False
-            Me.DTPDOA.Enabled = False
-            Me.DTPDOR.Enabled = False
-            Me.btnSave.Enabled = False
-            Me.btnUpdate.Enabled = True
+                        If disabled = "True" Or disabled = "False" Then
+                            If disabled = True Then
+                                Me.rbDisabledTrue.Checked = True
+                            Else
+                                Me.rbDisabledFalse.Checked = True
+                            End If
+                        End If
+                        If transport = "True" Or transport = "False" Then
+                            If transport = "True" Then
+                                Me.rbTransportTrue.Checked = True
+                            Else
+                                Me.rbTransportFalse.Checked = True
+                            End If
+                        End If
+                    End While
+                End If
+                reader.Close()
+                Me.btnSave.Enabled = False
+                Me.btnUpdate.Enabled = True
                 Me.btnDelete.Enabled = True
             End If
         Catch ex As Exception
@@ -562,7 +575,6 @@ Public Class frmStudentDetails
             Me.btnDelete.Enabled = False
             Me.btnSave.Enabled = True
             Me.btnUpdate.Enabled = False
-            Me.GroupBox3.Enabled = True
             Me.lstStudDetails.Items.Clear()
         Catch ex As Exception
             MsgBox(Err.GetException.Message, MsgBoxStyle.Exclamation + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "Error Detected")
@@ -571,7 +583,7 @@ Public Class frmStudentDetails
             If conn.State = ConnectionState.Open Then
                 conn.Close()
             End If
-           
+
         End Try
     End Sub
 
@@ -783,7 +795,6 @@ Public Class frmStudentDetails
             Me.btnDelete.Enabled = False
             Me.btnSave.Enabled = True
             Me.btnUpdate.Enabled = False
-            Me.GroupBox3.Enabled = True
             Me.lstStudDetails.Items.Clear()
         Catch ex As Exception
             MsgBox(Err.GetException.Message, MsgBoxStyle.Exclamation + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "Error Detected")

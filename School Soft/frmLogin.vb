@@ -89,6 +89,7 @@ Public Class frmLogin
 
     Private Sub frmLogin_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Try
+            Me.txtUserName.Select()
             My.Settings.Reload()
             'My.Settings.Reset()
             If Date.Today >= My.Settings.EndDate Then

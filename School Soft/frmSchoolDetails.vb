@@ -10,8 +10,28 @@ Public Class frmSchoolDetails
     Private mImageFile As Image
     Private mImageFilePath As String
 
-    Private Sub frmSchoolDetails_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub FindSavedRecord()
+        dbconnection()
+        cmdSchDetails.Connection = conn
+        cmdSchDetails.CommandType = CommandType.Text
+        cmdSchDetails.CommandText = "SELECT TOP 1 name,address,town,tel,emailAddress,schoolMotto FROM tblSchoolDetails"
+        cmdSchDetails.Parameters.Clear()
+        reader = cmdSchDetails.ExecuteReader
+        If reader.HasRows Then
+            While reader.Read
+                Me.txtSchName.Text = IIf(DBNull.Value.Equals(reader!name), "", reader!name)
+                Me.txtSchAddress.Text = IIf(DBNull.Value.Equals(reader!address), "", reader!address)
+                Me.txtTownName.Text = IIf(DBNull.Value.Equals(reader!town), "", reader!town)
+                Me.txtTelNumber.Text = IIf(DBNull.Value.Equals(reader!tel), "", reader!tel)
+                Me.txtEmailAddress.Text = IIf(DBNull.Value.Equals(reader!emailAddress), "", reader!emailAddress)
+            End While
+        End If
+        reader.Close()
+    End Sub
 
+    Private Sub frmSchoolDetails_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        RetrieveImgAC()
+        FindSavedRecord()
     End Sub
 
     Private Sub btnBrowse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBrowse.Click
@@ -42,11 +62,12 @@ Public Class frmSchoolDetails
         pbImage.Image = Image.FromFile(Me.txtEmailAddress.Tag)
         pbImage.SizeMode = PictureBoxSizeMode.StretchImage
     End Sub
-    Private Function UploadPhoto()
+    Private Function UploadPhoto(ByVal updateinsert As String)
         pbImage.Image.Dispose()
         Dim ok As Boolean = False
         Try
             If (Me.txtEmailAddress.Tag = String.Empty) Then
+                MsgBox("Select the logo file", MsgBoxStyle.Exclamation + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "Error Detected")
                 ok = False
                 Return ok
                 Exit Function
@@ -78,6 +99,7 @@ Public Class frmSchoolDetails
             cmdSchDetails.Parameters.AddWithValue("@tel", Me.txtTelNumber.Text.Trim)
             cmdSchDetails.Parameters.AddWithValue("@emailAddress", Me.txtEmailAddress.Text.Trim)
             cmdSchDetails.Parameters.AddWithValue("@dateOfreg", Date.Now)
+            cmdSchDetails.Parameters.AddWithValue("@updateInsert", updateinsert)
             Dim pic As SqlParameter = New SqlParameter("@logo", SqlDbType.Image)
             pic.Value = img
             cmdSchDetails.Parameters.Add(pic)
@@ -96,6 +118,8 @@ Public Class frmSchoolDetails
                 Me.txtEmailAddress.Text = ""
                 Me.txtEmailAddress.Tag = Nothing
                 Me.pbImage.Image = Nothing
+                RetrieveImgAC()
+                FindSavedRecord()
             End If
             ok = True
         Catch ex As Exception
@@ -125,16 +149,14 @@ Public Class frmSchoolDetails
         End If
         dbconnection()
         checkExistence()
-        If exists = True Then
-            Exit Sub
-        End If
+        Dim updateinsert As String = If(checkExistence(), "UPDATE", "INSERT")
         Dim result As MsgBoxResult = MsgBox("Save Record?", MsgBoxStyle.Question + MsgBoxStyle.ApplicationModal + MsgBoxStyle.YesNo, "Confirm Transaction")
         If result = MsgBoxResult.No Then
             Exit Sub
         End If
-        UploadPhoto()
+        UploadPhoto(updateinsert)
     End Sub
-    Private Sub checkExistence()
+    Private Function checkExistence() As Boolean
         cmdSchDetails.Connection = conn
         cmdSchDetails.CommandType = CommandType.Text
         cmdSchDetails.CommandText = "SELECT COUNT (*) AS count FROM tblSchoolDetails"
@@ -145,14 +167,14 @@ Public Class frmSchoolDetails
                 i = IIf(DBNull.Value.Equals(reader!count), 0, reader!count)
             End While
         End If
-        If i <= 0 Then
-            exists = False
-        Else
-            MsgBox("Record Exists Already", MsgBoxStyle.Exclamation + MsgBoxStyle.OkOnly + MsgBoxStyle.ApplicationModal, "Error Detected")
+        If i > 0 Then
             exists = True
+        Else
+            exists = False
         End If
         reader.Close()
-    End Sub
+        Return exists
+    End Function
 
     Private Sub txtEmailAddress_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtEmailAddress.LostFocus
         If Me.txtEmailAddress.Text = "" Then
@@ -187,7 +209,7 @@ Public Class frmSchoolDetails
             dbconnection()
             cmdSchDetails.Connection = conn
             cmdSchDetails.CommandType = CommandType.Text
-            cmdSchDetails.CommandText = "SELECT  logo,name FROM  tblSchoolDetails"
+            cmdSchDetails.CommandText = "SELECT  Top 1 logo,name FROM tblSchoolDetails"
             cmdSchDetails.Parameters.Clear()
             reader = cmdSchDetails.ExecuteReader
 
@@ -210,9 +232,5 @@ Public Class frmSchoolDetails
             MessageBox.Show(ex.Message.ToString(), "Data Error")
 
         End Try
-    End Sub
-
-    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
-        RetrieveImgAC()
     End Sub
 End Class

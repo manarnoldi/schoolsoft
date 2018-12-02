@@ -523,6 +523,7 @@ Public Class frmSchoolStaff
         Try
             Dim MaritalStatus As Boolean = False
             Dim isHead As Boolean = False
+            Dim sex As Boolean = False
             If conn.State = ConnectionState.Closed Then
                 conn.Open()
             End If
@@ -548,16 +549,23 @@ Public Class frmSchoolStaff
             '    End If
             'End If
 
-            If Me.rbMarriedFalse.Checked = False Then
+            If Me.rbMarriedFalse.Checked = True Then
                 MaritalStatus = False
             ElseIf Me.rbMarriedTrue.Checked = True Then
                 MaritalStatus = True
             End If
-            If Me.rbHeadFalse.Checked = False Then
+            If Me.rbHeadFalse.Checked = True Then
                 isHead = False
             ElseIf Me.rbHeadTrue.Checked = True Then
                 isHead = True
             End If
+
+            If Me.rbSexMale.Checked = True Then
+                sex = True
+            ElseIf Me.rbSexFemale.Checked = True Then
+                sex = False
+            End If
+
             Dim result As MsgBoxResult = MsgBox("Update Record?", MsgBoxStyle.Question + MsgBoxStyle.ApplicationModal + MsgBoxStyle.YesNo, "Confirm Transaction")
             If result = MsgBoxResult.Yes Then
                 cmdSchStaff.Connection = conn
@@ -581,6 +589,8 @@ Public Class frmSchoolStaff
                 cmdSchStaff.Parameters.AddWithValue("@contractType", Me.cboContractType.Text.Trim)
                 cmdSchStaff.Parameters.AddWithValue("@religion", Me.cboReligion.Text.Trim)
                 cmdSchStaff.Parameters.AddWithValue("@isHead", isHead)
+                cmdSchStaff.Parameters.AddWithValue("@idNumber", Me.txtIdNo.Text.Trim)
+                cmdSchStaff.Parameters.AddWithValue("@sex", sex)
                 Rec = cmdSchStaff.ExecuteNonQuery
                 If Rec > 0 Then
                     MsgBox("Record Updated!", MsgBoxStyle.Information + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "SuccessFul Transaction")
